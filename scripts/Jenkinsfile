@@ -15,9 +15,8 @@ pipeline {
         }
         stage('Build') {
             steps {
-                installation: 'InSearchPath'
-                cmakeBuild buildType: 'Release', cleanBuild: true, installation: 'InSearchPath', steps: [[withCmake: true]]
-            }
+                echo "Build step"
+             }
         }
 
         stage('Analyse') {
@@ -29,6 +28,5 @@ pipeline {
                 publishCppcheck allowNoReport: true, ignoreBlankFiles: true, pattern: '**/cppcheck-result.xml'
             }
         }
-
 	}
 }
