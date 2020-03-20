@@ -26,7 +26,7 @@ pipeline {
                 environment name: 'RUN_ANALYSIS', value: 'true'
             }
             steps {
-                sh cppcheck --enable=all --inconclusive --xml --xml-version=2 . 2> cppckeck_results.xml
+                sh label: '', returnStatus: true, script: 'cppcheck . --xml --language=c++ --suppressions-list=suppressions.txt 2> cppckeck_results.xml'
                 publishCppcheck pattern: 'cppckeck_results.xml'
            }
         }
