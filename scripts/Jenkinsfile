@@ -1,0 +1,34 @@
+pipeline {
+	agent any
+
+	parameters {
+		booleanParam name: 'RUN_TESTS', defaultValue: true, description: 'Run Tests?'
+		booleanParam name: 'RUN_ANALYSIS', defaultValue: true, description: 'Run Static Code Analysis?'
+		booleanParam name: 'DEPLOY', defaultValue: true, description: 'Deploy Artifacts?'
+	}
+
+	stages {
+        stage('checkout'){
+            steps{
+                checkout([$class: 'GitSCM', branches: [[name: '*/master']], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[url: 'https://github.com/vrkvijay/jenkins_exercise_with_c-']]])
+            }
+        }
+        stage('Build') {
+            steps {
+                installation: 'InSearchPath'
+                cmakeBuild buildType: 'Release', cleanBuild: true, installation: 'InSearchPath', steps: [[withCmake: true]]
+            }
+        }
+
+        stage('Analyse') {
+            when {
+                environment name: 'RUN_ANALYSIS', value: 'true'
+            }
+            steps {
+                sh label: '', returnStatus: true, script: 'cppcheck . --xml --language=c++ --suppressions-list=suppressions.txt 2> cppcheck-result.xml'
+                publishCppcheck allowNoReport: true, ignoreBlankFiles: true, pattern: '**/cppcheck-result.xml'
+            }
+        }
+
+	}
+}
