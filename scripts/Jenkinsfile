@@ -15,7 +15,13 @@ pipeline {
         }
         stage('Build') {
             steps {
-                echo "Build step"
+                echo "Build step End"
+                sh mkdir build
+                sh cd build
+                sh cmake .. && make
+                sh ./helloDemo
+                sh cd ..
+                echo "Build step End"
              }
         }
 
